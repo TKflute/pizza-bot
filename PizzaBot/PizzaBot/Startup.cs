@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PizzaBot.Dialogs;
 
 namespace PizzaBot
 {
@@ -31,7 +32,8 @@ namespace PizzaBot
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, EmptyBot>();
+            services.AddTransient<IBot, DialogBot<OrderDialog>>();
+          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
