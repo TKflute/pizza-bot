@@ -82,3 +82,10 @@ C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\obj\Debug\netcoreapp3.1\
 C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\obj\Debug\netcoreapp3.1\PizzaBot.csproj.CopyComplete
 C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\obj\Debug\netcoreapp3.1\PizzaBot.dll
 C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\obj\Debug\netcoreapp3.1\PizzaBot.pdb
+C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\bin\Debug\netcoreapp3.1\Microsoft.Bot.Builder.Dialogs.dll
+C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Definitions.dll
+C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Text.dll
+C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Text.Choice.dll
+C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Text.DateTime.dll
+C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Text.Number.dll
+C:\Users\tarak\Desktop\bots\pizza-bot\PizzaBot\PizzaBot\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Text.NumberWithUnit.dll

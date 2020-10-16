@@ -25,6 +25,7 @@
       "PizzaBot/1.0.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "3.1.1",
+          "Microsoft.Bot.Builder.Dialogs": "4.10.3",
           "Microsoft.Bot.Builder.Integration.AspNet.Core": "4.10.3",
           "Microsoft.AspNetCore.Antiforgery": "3.1.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions": "3.1.0.0",
@@ -159,7 +160,7 @@
           "System.Buffers.Reference": "4.0.2.0",
           "System.Collections.Concurrent.Reference": "4.0.15.0",
           "System.Collections.Reference": "4.1.2.0",
-          "System.Collections.Immutable": "1.2.5.0",
+          "System.Collections.Immutable.Reference": "1.2.5.0",
           "System.Collections.NonGeneric.Reference": "4.1.2.0",
           "System.Collections.Specialized.Reference": "4.1.2.0",
           "System.ComponentModel.Annotations": "4.3.1.0",
@@ -293,7 +294,7 @@
           "System.Threading.Timer.Reference": "4.1.2.0",
           "System.Transactions": "4.0.0.0",
           "System.Transactions.Local": "4.0.2.0",
-          "System.ValueTuple": "4.0.3.0",
+          "System.ValueTuple.Reference": "4.0.3.0",
           "System.Web": "4.0.0.0",
           "System.Web.HttpUtility": "4.0.2.0",
           "System.Windows": "4.0.0.0",
@@ -361,6 +362,22 @@
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.Bot.Builder.dll": {}
+        }
+      },
+      "Microsoft.Bot.Builder.Dialogs/4.10.3": {
+        "dependencies": {
+          "Microsoft.Bot.Builder": "4.10.3",
+          "Microsoft.Recognizers.Text.Choice": "1.2.9",
+          "Microsoft.Recognizers.Text.DateTime": "1.2.9"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Bot.Builder.Dialogs.dll": {
+            "assemblyVersion": "4.10.3.0",
+            "fileVersion": "4.10.3.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Bot.Builder.Dialogs.dll": {}
         }
       },
       "Microsoft.Bot.Builder.Integration.AspNet.Core/4.10.3": {
@@ -588,6 +605,89 @@
       },
       "Microsoft.NETCore.Platforms/1.1.1": {},
       "Microsoft.NETCore.Targets/1.1.3": {},
+      "Microsoft.Recognizers.Text/1.2.9": {
+        "dependencies": {
+          "System.Collections.Immutable": "1.4.0",
+          "System.ValueTuple": "4.4.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Recognizers.Definitions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/Microsoft.Recognizers.Text.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Recognizers.Definitions.dll": {},
+          "lib/netstandard2.0/Microsoft.Recognizers.Text.dll": {}
+        }
+      },
+      "Microsoft.Recognizers.Text.Choice/1.2.9": {
+        "dependencies": {
+          "Microsoft.Recognizers.Text": "1.2.9",
+          "System.Collections.Immutable": "1.4.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Recognizers.Text.Choice.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Recognizers.Text.Choice.dll": {}
+        }
+      },
+      "Microsoft.Recognizers.Text.DateTime/1.2.9": {
+        "dependencies": {
+          "Microsoft.Recognizers.Text": "1.2.9",
+          "Microsoft.Recognizers.Text.Number": "1.2.9",
+          "Microsoft.Recognizers.Text.NumberWithUnit": "1.2.9",
+          "System.Collections.Immutable": "1.4.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Recognizers.Text.DateTime.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Recognizers.Text.DateTime.dll": {}
+        }
+      },
+      "Microsoft.Recognizers.Text.Number/1.2.9": {
+        "dependencies": {
+          "Microsoft.Recognizers.Text": "1.2.9",
+          "System.Collections.Immutable": "1.4.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Recognizers.Text.Number.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Recognizers.Text.Number.dll": {}
+        }
+      },
+      "Microsoft.Recognizers.Text.NumberWithUnit/1.2.9": {
+        "dependencies": {
+          "Microsoft.Recognizers.Text": "1.2.9",
+          "Microsoft.Recognizers.Text.Number": "1.2.9",
+          "System.Collections.Immutable": "1.4.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Recognizers.Text.NumberWithUnit.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Recognizers.Text.NumberWithUnit.dll": {}
+        }
+      },
       "Microsoft.Rest.ClientRuntime/2.3.21": {
         "dependencies": {
           "Newtonsoft.Json": "12.0.3"
@@ -757,6 +857,7 @@
           "System.Threading.Tasks": "4.3.0"
         }
       },
+      "System.Collections.Immutable/1.4.0": {},
       "System.Collections.NonGeneric/4.3.0": {
         "dependencies": {
           "System.Diagnostics.Debug": "4.3.0",
@@ -1385,6 +1486,7 @@
           "System.Runtime": "4.3.0"
         }
       },
+      "System.ValueTuple/4.4.0": {},
       "System.Xml.ReaderWriter/4.3.0": {
         "dependencies": {
           "System.Collections": "4.3.0",
@@ -2253,7 +2355,7 @@
         },
         "compileOnly": true
       },
-      "System.Collections.Immutable/1.2.5.0": {
+      "System.Collections.Immutable.Reference/1.2.5.0": {
         "compile": {
           "System.Collections.Immutable.dll": {}
         },
@@ -3057,7 +3159,7 @@
         },
         "compileOnly": true
       },
-      "System.ValueTuple/4.0.3.0": {
+      "System.ValueTuple.Reference/4.0.3.0": {
         "compile": {
           "System.ValueTuple.dll": {}
         },
@@ -3175,6 +3277,13 @@
       "sha512": "sha512-1vecTTZ4bNVSwJ39sWG9Ymz+1JxAUIwyT0m/DBMF8K94UQoKrKOUvZ5l+989ONM7+CKm5E2cC/E2hipOYEdmbw==",
       "path": "microsoft.bot.builder/4.10.3",
       "hashPath": "microsoft.bot.builder.4.10.3.nupkg.sha512"
+    },
+    "Microsoft.Bot.Builder.Dialogs/4.10.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-PJIGw9AGOmzlhLPpQ34uVuPMYBJTDujdvlz6AlBibplG6HHLNt7FjB2n2ttIRYJl2Q/YllX9WBVPAuCvDWH25w==",
+      "path": "microsoft.bot.builder.dialogs/4.10.3",
+      "hashPath": "microsoft.bot.builder.dialogs.4.10.3.nupkg.sha512"
     },
     "Microsoft.Bot.Builder.Integration.AspNet.Core/4.10.3": {
       "type": "package",
@@ -3336,6 +3445,41 @@
       "sha512": "sha512-3Wrmi0kJDzClwAC+iBdUBpEKmEle8FQNsCs77fkiOIw/9oYA07bL1EZNX0kQ2OMN3xpwvl0vAtOCYY3ndDNlhQ==",
       "path": "microsoft.netcore.targets/1.1.3",
       "hashPath": "microsoft.netcore.targets.1.1.3.nupkg.sha512"
+    },
+    "Microsoft.Recognizers.Text/1.2.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RHJUVyePozmWm/C0T0zbEQ25eNJgjsRUq9Ly3SiuYZJeYFXb8H6NnFkZBN6iHy/d9QtrRHnZmSDqGj1+ECs4YA==",
+      "path": "microsoft.recognizers.text/1.2.9",
+      "hashPath": "microsoft.recognizers.text.1.2.9.nupkg.sha512"
+    },
+    "Microsoft.Recognizers.Text.Choice/1.2.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qrKntk3j8wjAHfbzdSAHDz2d82BiwXANZzSwrkCUdwj1MZmz5U0EI3vEFT19m5t/dju7U/4ARGpzDEyjwEoLqQ==",
+      "path": "microsoft.recognizers.text.choice/1.2.9",
+      "hashPath": "microsoft.recognizers.text.choice.1.2.9.nupkg.sha512"
+    },
+    "Microsoft.Recognizers.Text.DateTime/1.2.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dbZox2gglj8qEmdhtRiaDboI18BDIxhkamvTDFTBtf5fg6VUEgZACO0RaVenmCw039DWlIDqNqk6XyRpRzn/xw==",
+      "path": "microsoft.recognizers.text.datetime/1.2.9",
+      "hashPath": "microsoft.recognizers.text.datetime.1.2.9.nupkg.sha512"
+    },
+    "Microsoft.Recognizers.Text.Number/1.2.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ukOZPTimOVlDCwZTjisGkqBkW36+uJfzLyGNR6yn2cYWXL40TgfEzwtvOio5o0q/VYRVB17XHlwLUIVW0dJDaQ==",
+      "path": "microsoft.recognizers.text.number/1.2.9",
+      "hashPath": "microsoft.recognizers.text.number.1.2.9.nupkg.sha512"
+    },
+    "Microsoft.Recognizers.Text.NumberWithUnit/1.2.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-CVXByaIYWxDBxVeGvTMaG/xbAh5+CORhQNLkrcmqKNw8WAl20bBZxZJFwe77gVZ2UN9OQ0NX2yI+R86NOddtQg==",
+      "path": "microsoft.recognizers.text.numberwithunit/1.2.9",
+      "hashPath": "microsoft.recognizers.text.numberwithunit.1.2.9.nupkg.sha512"
     },
     "Microsoft.Rest.ClientRuntime/2.3.21": {
       "type": "package",
@@ -3511,6 +3655,13 @@
       "sha512": "sha512-ztl69Xp0Y/UXCL+3v3tEU+lIy+bvjKNUmopn1wep/a291pVPK7dxBd6T7WnlQqRog+d1a/hSsgRsmFnIBKTPLQ==",
       "path": "system.collections.concurrent/4.3.0",
       "hashPath": "system.collections.concurrent.4.3.0.nupkg.sha512"
+    },
+    "System.Collections.Immutable/1.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-71hw5RUJRu5+q/geUY69gpXD8Upd12cH+F3MwpXV2zle7Bqqkrmc1JblOTuvUcgmdnUtQvBlV5e1d6RH+H2lvA==",
+      "path": "system.collections.immutable/1.4.0",
+      "hashPath": "system.collections.immutable.1.4.0.nupkg.sha512"
     },
     "System.Collections.NonGeneric/4.3.0": {
       "type": "package",
@@ -3945,6 +4096,13 @@
       "sha512": "sha512-Z6YfyYTCg7lOZjJzBjONJTFKGN9/NIYKSxhU5GRd+DTwHSZyvWp1xuI5aR+dLg+ayyC5Xv57KiY4oJ0tMO89fQ==",
       "path": "system.threading.timer/4.3.0",
       "hashPath": "system.threading.timer.4.3.0.nupkg.sha512"
+    },
+    "System.ValueTuple/4.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-BahUww/+mdP4ARCAh2RQhQTg13wYLVrBb9SYVgW8ZlrwjraGCXHGjo0oIiUfZ34LUZkMMR+RAzR7dEY4S1HeQQ==",
+      "path": "system.valuetuple/4.4.0",
+      "hashPath": "system.valuetuple.4.4.0.nupkg.sha512"
     },
     "System.Xml.ReaderWriter/4.3.0": {
       "type": "package",
@@ -4639,7 +4797,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "System.Collections.Immutable/1.2.5.0": {
+    "System.Collections.Immutable.Reference/1.2.5.0": {
       "type": "referenceassembly",
       "serviceable": false,
       "sha512": ""
@@ -5309,7 +5467,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "System.ValueTuple/4.0.3.0": {
+    "System.ValueTuple.Reference/4.0.3.0": {
       "type": "referenceassembly",
       "serviceable": false,
       "sha512": ""

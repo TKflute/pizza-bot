@@ -22,15 +22,16 @@ namespace PizzaBot.Dialogs
             _orderAccessor = userState.CreateProperty<Order>("Order");
 
             // This array defines how the Waterfall will execute.
+            // TODO NEXT: Start by getting two simple steps to work, i.e. a Greeting step and Ordering one drink
             var waterfallSteps = new WaterfallStep[]
             {
-                TransportStepAsync,
-                NameStepAsync,
-                NameConfirmStepAsync,
-                AgeStepAsync,
-                PictureStepAsync,
-                ConfirmStepAsync,
-                SummaryStepAsync,
+                WelcomeStepAsync
+                //NameStepAsync,
+                //NameConfirmStepAsync,
+                //AgeStepAsync,
+                //PictureStepAsync,
+                //ConfirmStepAsync,
+                //SummaryStepAsync,
             };
 
             // Add named dialogs to the DialogSet. These names are saved in the dialog state.
@@ -45,16 +46,18 @@ namespace PizzaBot.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private static async Task<DialogTurnResult> TransportStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> WelcomeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
             // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+            await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text("Please enter your mode of transport."),
-                    Choices = ChoiceFactory.ToChoices(new List<string> { "Car", "Bus", "Bicycle" }),
+                    Prompt = MessageFactory.Text("Will your order be for pickup or delivery today?"),
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "Pickup", "Delivery"}),
                 }, cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thanks! We will process your order."), cancellationToken);
+            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
         private static async Task<DialogTurnResult> NameStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -132,49 +135,49 @@ namespace PizzaBot.Dialogs
             return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Is this ok?") }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            if ((bool)stepContext.Result)
-            {
-                // Get the current profile object from user state.
-                var order = await _orderAccessor.GetAsync(stepContext.Context, () => new Order(), cancellationToken);
+        //private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        //{
+        //    if ((bool)stepContext.Result)
+        //    {
+        //        // Get the current profile object from user state.
+        //        var order = await _orderAccessor.GetAsync(stepContext.Context, () => new Order(), cancellationToken);
 
-                order.Transport = (string)stepContext.Values["transport"];
-                order.Name = (string)stepContext.Values["name"];
-                order.Age = (int)stepContext.Values["age"];
-                order.Picture = (Attachment)stepContext.Values["picture"];
+        //        order.Transport = (string)stepContext.Values["transport"];
+        //        order.Name = (string)stepContext.Values["name"];
+        //        order.Age = (int)stepContext.Values["age"];
+        //        order.Picture = (Attachment)stepContext.Values["picture"];
 
-                var msg = $"I have your mode of transport as {order.Transport} and your name as {order.Name}";
+        //        var msg = $"I have your mode of transport as {order.Transport} and your name as {order.Name}";
 
-                if (order.Age != -1)
-                {
-                    msg += $" and your age as {order.Age}";
-                }
+        //        if (order.Age != -1)
+        //        {
+        //            msg += $" and your age as {order.Age}";
+        //        }
 
-                msg += ".";
+        //        msg += ".";
 
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
+        //        await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
 
-                if (order.Picture != null)
-                {
-                    try
-                    {
-                        await stepContext.Context.SendActivityAsync(MessageFactory.Attachment(order.Picture, "This is your profile picture."), cancellationToken);
-                    }
-                    catch
-                    {
-                        await stepContext.Context.SendActivityAsync(MessageFactory.Text("A profile picture was saved but could not be displayed here."), cancellationToken);
-                    }
-                }
-            }
-            else
-            {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thanks. Your profile will not be kept."), cancellationToken);
-            }
+        //        if (order.Picture != null)
+        //        {
+        //            try
+        //            {
+        //                await stepContext.Context.SendActivityAsync(MessageFactory.Attachment(order.Picture, "This is your profile picture."), cancellationToken);
+        //            }
+        //            catch
+        //            {
+        //                await stepContext.Context.SendActivityAsync(MessageFactory.Text("A profile picture was saved but could not be displayed here."), cancellationToken);
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thanks. Your profile will not be kept."), cancellationToken);
+        //    }
 
-            // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
-            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
-        }
+        //    // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
+        //    return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+        //}
 
         private static Task<bool> AgePromptValidatorAsync(PromptValidatorContext<int> promptContext, CancellationToken cancellationToken)
         {
