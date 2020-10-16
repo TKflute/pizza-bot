@@ -28,9 +28,9 @@ namespace PizzaBot.Dialogs
             // TODO NEXT: Start by getting two simple steps to work, i.e. a Greeting step and Ordering one drink
             var waterfallSteps = new WaterfallStep[]
             {
-                WelcomeStepAsync,
-                NameStepAsync
-                //NameConfirmStepAsync,
+                OrderTypeStepAsync,
+                DisplayMainMenuStepAsync,
+                NameConfirmStepAsync
                 //AgeStepAsync,
                 //PictureStepAsync,
                 //ConfirmStepAsync,
@@ -49,7 +49,7 @@ namespace PizzaBot.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private static async Task<DialogTurnResult> WelcomeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> OrderTypeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
             // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
@@ -61,7 +61,7 @@ namespace PizzaBot.Dialogs
                 }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> NameStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> DisplayMainMenuStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             //stepContext.Values["transport"] = ((FoundChoice)stepContext.Result).Value;
 
@@ -70,24 +70,28 @@ namespace PizzaBot.Dialogs
             //**** My code starts here *****/
             stepContext.Values["orderType"] = ((FoundChoice)stepContext.Result).Value;
 
-            // Get the current profile object from user state.
-            var order = await _orderAccessor.GetAsync(stepContext.Context, () => new Order(), cancellationToken);
-            string orderType = (string)stepContext.Values["orderType"];
-            order.Type = (Order.OrderType)Enum.Parse(typeof(Order.OrderType), orderType);
-
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks! We will process your order for {order.Type}."), cancellationToken);
-            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("What would you like to add to your order?"),
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "Pizza", "Sides", "Drinks" }),
+                }, cancellationToken);
         }
 
         private async Task<DialogTurnResult> NameConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            stepContext.Values["name"] = (string)stepContext.Result;
+            // *** My code starts here (keep moving closing code to next step while testing ***)
+            // setting user choice from last step
+            stepContext.Values["lastOrderItem"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
+            
+            // Get the current profile object from user state.
+            var order = await _orderAccessor.GetAsync(stepContext.Context, () => new Order(), cancellationToken);
+            string orderType = (string)stepContext.Values["orderType"];
+            order.Type = (Order.OrderType)Enum.Parse(typeof(Order.OrderType), orderType);
+           // order.OrderItems = new List<OrderItem>()
 
-            // We can send messages to the user at any point in the WaterfallStep.
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {stepContext.Result}."), cancellationToken);
-
-            // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-            return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Would you like to give your age?") }, cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks! We will process your {order.Type} order for {stepContext.Values["lastOrderItem"]}."), cancellationToken);
+            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
         private async Task<DialogTurnResult> AgeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
