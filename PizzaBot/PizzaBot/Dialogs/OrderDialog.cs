@@ -30,7 +30,14 @@ namespace PizzaBot.Dialogs
             {
                 OrderTypeStepAsync,
                 DisplayMainMenuStepAsync,
-                NameConfirmStepAsync
+                PizzaSizeStepAsync,
+                PizzaCrustStepAsync,
+                PizzaToppingsStepAsync,
+                CustomerStreetStepAsync,
+                CustomerCityStepAsync,
+                CustomerStateStepAsync,
+                CustomerZipStepAsync,
+                OrderConfirmStepAsync
                 //AgeStepAsync,
                 //PictureStepAsync,
                 //ConfirmStepAsync,
@@ -78,19 +85,110 @@ namespace PizzaBot.Dialogs
                 }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> NameConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> PizzaSizeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // *** My code starts here (keep moving closing code to next step while testing ***)
             // setting user choice from last step
             stepContext.Values["lastOrderItem"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
-            
+
+            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("What size pizza would you like?"),
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "Small", "Medium", "Large" }),
+                }, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> PizzaCrustStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            // *** My code starts here (keep moving closing code to next step while testing ***)
+            // setting user choice from last step
+            stepContext.Values["pizzaSize"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
+
+            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("What kind of crust?"),
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "Thin", "HandTossed", "DeepDish" }),
+                }, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> PizzaToppingsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            // *** My code starts here (keep moving closing code to next step while testing ***)
+            // setting user choice from last step
+            stepContext.Values["pizzaCrust"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
+
+            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("What kind of topping? (Choose one)"),
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "Sausage", "Pepperoni", "Mushroom" }),
+                }, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> CustomerStreetStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            // *** My code starts here (keep moving closing code to next step while testing ***)
+            // setting user choice from last step
+            stepContext.Values["pizzaTopping"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
+
+            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions 
+            { 
+                Prompt = MessageFactory.Text("Good choice! Please enter your street address.") 
+
+            }, cancellationToken);
+
+        }
+
+        private async Task<DialogTurnResult> CustomerCityStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values["street"] = (string)stepContext.Result;
+
+            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+            {
+                Prompt = MessageFactory.Text("Please enter your city.")
+
+            }, cancellationToken);
+
+        }
+
+        private async Task<DialogTurnResult> CustomerStateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values["city"] = (string)stepContext.Result;
+
+            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+            {
+                Prompt = MessageFactory.Text("Please enter your state.")
+
+            }, cancellationToken);
+
+        }
+
+        private async Task<DialogTurnResult> CustomerZipStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values["state"] = (string)stepContext.Result;
+
+            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+            {
+                Prompt = MessageFactory.Text("And your zip?")
+
+            }, cancellationToken);
+
+        }
+
+        private async Task<DialogTurnResult> OrderConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            // *** My code starts here (keep moving closing code to next step while testing ***)
+            stepContext.Values["zip"] = (string)stepContext.Result;
             // Get the current profile object from user state.
             var order = await _orderAccessor.GetAsync(stepContext.Context, () => new Order(), cancellationToken);
             string orderType = (string)stepContext.Values["orderType"];
             order.Type = (Order.OrderType)Enum.Parse(typeof(Order.OrderType), orderType);
            // order.OrderItems = new List<OrderItem>()
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks! We will process your {order.Type} order for {stepContext.Values["lastOrderItem"]}."), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks! We will process your {order.Type} order " +
+                $"for {stepContext.Values["lastOrderItem"]} and send it to {stepContext.Values["street"]}. Enjoy your pizza!"), cancellationToken);
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
