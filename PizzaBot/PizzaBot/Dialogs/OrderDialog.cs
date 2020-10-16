@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,10 +10,12 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using PizzaBot.Models;
 
+
 namespace PizzaBot.Dialogs
 {
     public class OrderDialog : ComponentDialog
     {
+        // TODO: Some of methods from sample project in this class are static and some are not. Why??
         private readonly IStatePropertyAccessor<Order> _orderAccessor;
 
         public OrderDialog(UserState userState)
@@ -25,8 +28,8 @@ namespace PizzaBot.Dialogs
             // TODO NEXT: Start by getting two simple steps to work, i.e. a Greeting step and Ordering one drink
             var waterfallSteps = new WaterfallStep[]
             {
-                WelcomeStepAsync
-                //NameStepAsync,
+                WelcomeStepAsync,
+                NameStepAsync
                 //NameConfirmStepAsync,
                 //AgeStepAsync,
                 //PictureStepAsync,
@@ -50,21 +53,30 @@ namespace PizzaBot.Dialogs
         {
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
             // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
-            await stepContext.PromptAsync(nameof(ChoicePrompt),
+            return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Will your order be for pickup or delivery today?"),
                     Choices = ChoiceFactory.ToChoices(new List<string> { "Pickup", "Delivery"}),
                 }, cancellationToken);
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thanks! We will process your order."), cancellationToken);
-            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
-        private static async Task<DialogTurnResult> NameStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> NameStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            stepContext.Values["transport"] = ((FoundChoice)stepContext.Result).Value;
+            //stepContext.Values["transport"] = ((FoundChoice)stepContext.Result).Value;
 
-            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter your name.") }, cancellationToken);
+            //return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter your name.") }, cancellationToken);
+            
+            //**** My code starts here *****/
+            stepContext.Values["orderType"] = ((FoundChoice)stepContext.Result).Value;
+
+            // Get the current profile object from user state.
+            var order = await _orderAccessor.GetAsync(stepContext.Context, () => new Order(), cancellationToken);
+            string orderType = (string)stepContext.Values["orderType"];
+            order.Type = (Order.OrderType)Enum.Parse(typeof(Order.OrderType), orderType);
+
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks! We will process your order for {order.Type}."), cancellationToken);
+            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
         private async Task<DialogTurnResult> NameConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
