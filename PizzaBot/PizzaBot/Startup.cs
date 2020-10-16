@@ -41,10 +41,10 @@ namespace PizzaBot
             services.AddSingleton<ConversationState>();
 
             // The Dialog that will be run by the bot.
-            services.AddSingleton<OrderDialog>();
+            services.AddSingleton<MainDialog>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, DialogBot<OrderDialog>>();
+            services.AddTransient<IBot, DialogBot<MainDialog>>();
           
         }
 
