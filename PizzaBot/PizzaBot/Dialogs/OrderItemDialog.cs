@@ -5,6 +5,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using System;
+using PizzaBot.Models;
 
 namespace PizzaBot.Dialogs
 {
@@ -84,10 +85,12 @@ namespace PizzaBot.Dialogs
 
         private async Task<DialogTurnResult> EndDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // This isn't working: it is null in next step in parent dialog
-            
-            
-            return await stepContext.EndDialogAsync(stepContext.Values["lastOrderItem"], cancellationToken);
+            var order = (Order)stepContext.Result;
+
+            // TODO: start here: would need to save user input as a Pizza object as the conversation goes
+            //order.OrderItems.Add((OrderItem)stepContext.Values["lastOrderItem"]);
+          
+            return await stepContext.EndDialogAsync(order, cancellationToken);
         }
     }
 }

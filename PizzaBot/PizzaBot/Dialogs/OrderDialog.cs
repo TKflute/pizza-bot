@@ -52,17 +52,15 @@ namespace PizzaBot.Dialogs
 
         private async Task<DialogTurnResult> OrderConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var lastOrderItem = (string)stepContext.Result;
-            Console.WriteLine(stepContext.Result);
-            Console.WriteLine(lastOrderItem);
+            // var lastOrderItem = (string)stepContext.Result;
+            var order = (Order)stepContext.Result;
             // Get the current profile object from user state.
-            var order = await _orderAccessor.GetAsync(stepContext.Context, () => new Order(), cancellationToken);
+            //var order = await _orderAccessor.GetAsync(stepContext.Context, () => new Order(), cancellationToken);
             string orderType = (string)stepContext.Values["orderType"];
             order.Type = (Order.OrderType)Enum.Parse(typeof(Order.OrderType), orderType);
             // order.OrderItems = new List<OrderItem>()
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks! We will process your {order.Type} order for " + lastOrderItem/* +
-                $"for {stepContext.Values["lastOrderItem"]} and send it to {stepContext.Values["street"]}. Enjoy your pizza!"*/), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {order.Customer.Name}! We will process your {order.Type} order"), cancellationToken);
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
     }
