@@ -11,6 +11,8 @@ namespace PizzaBot.Dialogs
 {
     public class OrderItemDialog : ComponentDialog
     {
+        private Pizza pizza; // right now only branching to order a pizza 
+        //(So this would need to be in a PizzaDialog or have mult fields for side and drink
         public OrderItemDialog()
             : base(nameof(OrderItemDialog))
         {
@@ -42,6 +44,7 @@ namespace PizzaBot.Dialogs
         private async Task<DialogTurnResult> PizzaSizeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["lastOrderItem"] = ((FoundChoice)stepContext.Result).Value;
+            pizza = new Pizza();
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
@@ -53,6 +56,8 @@ namespace PizzaBot.Dialogs
         private async Task<DialogTurnResult> PizzaCrustStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["pizzaSize"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
+            string size = (string)stepContext.Values["pizzaSize"];
+            pizza.Size = (Pizza.PizzaSize)Enum.Parse(typeof(Pizza.PizzaSize), size);
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
@@ -65,6 +70,8 @@ namespace PizzaBot.Dialogs
         private async Task<DialogTurnResult> PizzaToppingsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["pizzaCrust"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
+            string crust = (string)stepContext.Values["pizzaCrust"];
+            pizza.Crust = (Pizza.PizzaCrust)Enum.Parse(typeof(Pizza.PizzaCrust), crust);
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
@@ -80,6 +87,9 @@ namespace PizzaBot.Dialogs
         private async Task<DialogTurnResult> CustomerInfoStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["pizzaTopping"] = ((FoundChoice)stepContext.Result).Value;
+            string topping = (string)stepContext.Values["pizzaTopping"];
+            pizza.Toppings.Add((Pizza.Topping)Enum.Parse(typeof(Pizza.Topping), topping));
+
             return await stepContext.BeginDialogAsync(nameof(CustomerInfoDialog), null, cancellationToken);
         }
 
@@ -88,7 +98,7 @@ namespace PizzaBot.Dialogs
             var order = (Order)stepContext.Result;
 
             // TODO: start here: would need to save user input as a Pizza object as the conversation goes
-            //order.OrderItems.Add((OrderItem)stepContext.Values["lastOrderItem"]);
+            order.OrderItems.Add(pizza);
           
             return await stepContext.EndDialogAsync(order, cancellationToken);
         }

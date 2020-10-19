@@ -60,7 +60,7 @@ namespace PizzaBot.Dialogs
             order.Type = (Order.OrderType)Enum.Parse(typeof(Order.OrderType), orderType);
             // order.OrderItems = new List<OrderItem>()
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {order.Customer.Name}! We will process your {order.Type} order"), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {order.Customer.Name}! We will process your {order.OrderItems} order for {order.Type}"), cancellationToken);
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
     }
