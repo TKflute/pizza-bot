@@ -20,7 +20,6 @@ namespace PizzaBot.Dialogs
                 CustomerZipStepAsync
             }));
 
-            AddDialog(new CustomerInfoDialog());
             AddDialog(new TextPrompt(nameof(TextPrompt)));
 
             InitialDialogId = nameof(WaterfallDialog);
