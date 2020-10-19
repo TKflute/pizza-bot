@@ -17,7 +17,8 @@ namespace PizzaBot.Dialogs
                 CustomerStreetStepAsync,
                 CustomerCityStepAsync,
                 CustomerStateStepAsync,
-                CustomerZipStepAsync
+                CustomerZipStepAsync, 
+                EndDialogStepAsync
             }));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -26,15 +27,11 @@ namespace PizzaBot.Dialogs
         }
         private async Task<DialogTurnResult> CustomerStreetStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-          
-            stepContext.Values["pizzaTopping"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
-
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
             {
                 Prompt = MessageFactory.Text("Good choice! Please enter your street address.")
 
             }, cancellationToken);
-
         }
 
         private async Task<DialogTurnResult> CustomerCityStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -70,7 +67,13 @@ namespace PizzaBot.Dialogs
                 Prompt = MessageFactory.Text("And your zip?")
 
             }, cancellationToken);
+        }
 
+        private async Task<DialogTurnResult> EndDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values["zip"] = (string)stepContext.Result;
+
+            return await stepContext.EndDialogAsync(/*stepContext.Values["zip"]*/null, cancellationToken);
         }
     }
 }

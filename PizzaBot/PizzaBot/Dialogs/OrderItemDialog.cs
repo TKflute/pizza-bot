@@ -17,7 +17,8 @@ namespace PizzaBot.Dialogs
                 DisplayItemMenuStepAsync,
                 PizzaSizeStepAsync,
                 PizzaCrustStepAsync,
-                PizzaToppingsStepAsync
+                PizzaToppingsStepAsync, 
+                CustomerInfoStepAsync
             }));
 
             AddDialog(new CustomerInfoDialog());
@@ -27,9 +28,6 @@ namespace PizzaBot.Dialogs
         }
         private async Task<DialogTurnResult> DisplayItemMenuStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-
-            stepContext.Values["orderType"] = ((FoundChoice)stepContext.Result).Value;
-
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
@@ -40,9 +38,7 @@ namespace PizzaBot.Dialogs
 
         private async Task<DialogTurnResult> PizzaSizeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-           
-            stepContext.Values["lastOrderItem"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
-
+            stepContext.Values["lastOrderItem"] = ((FoundChoice)stepContext.Result).Value;
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
@@ -53,7 +49,6 @@ namespace PizzaBot.Dialogs
 
         private async Task<DialogTurnResult> PizzaCrustStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-    
             stepContext.Values["pizzaSize"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
@@ -66,10 +61,9 @@ namespace PizzaBot.Dialogs
 
         private async Task<DialogTurnResult> PizzaToppingsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-          
             stepContext.Values["pizzaCrust"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
 
-            stepContext.Values["pizzaTopping"] = await stepContext.PromptAsync(nameof(ChoicePrompt),
+            return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("What kind of topping? (Choose one)"),
@@ -77,7 +71,18 @@ namespace PizzaBot.Dialogs
                 }, cancellationToken);
 
             // return await stepContext.BeginDialogAsync(nameof(OrderItemDialog), null, cancellationToken); // is this how you would restart a dialog (but with a Restart method)
+          
+        }
+
+        private async Task<DialogTurnResult> CustomerInfoStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values["pizzaTopping"] = ((FoundChoice)stepContext.Result).Value;
             return await stepContext.BeginDialogAsync(nameof(CustomerInfoDialog), null, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> EndDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            return await stepContext.EndDialogAsync(/*stepContext.Values["zip"]*/null, cancellationToken);
         }
     }
 }

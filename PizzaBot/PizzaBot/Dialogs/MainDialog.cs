@@ -29,7 +29,7 @@ namespace PizzaBot.Dialogs
             // This array defines how the Waterfall will execute.
             var waterfallSteps = new WaterfallStep[]
             {
-                //WelcomeStepAsync,
+                WelcomeStepAsync,
                 GoodbyeStepAsync
                 
                 //CustomerStreetStepAsync,
