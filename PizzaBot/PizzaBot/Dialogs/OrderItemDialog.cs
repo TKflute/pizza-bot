@@ -4,6 +4,7 @@ using System.Threading;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using System;
 
 namespace PizzaBot.Dialogs
 {
@@ -18,7 +19,8 @@ namespace PizzaBot.Dialogs
                 PizzaSizeStepAsync,
                 PizzaCrustStepAsync,
                 PizzaToppingsStepAsync, 
-                CustomerInfoStepAsync
+                CustomerInfoStepAsync, 
+                EndDialogStepAsync
             }));
 
             AddDialog(new CustomerInfoDialog());
@@ -82,7 +84,10 @@ namespace PizzaBot.Dialogs
 
         private async Task<DialogTurnResult> EndDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return await stepContext.EndDialogAsync(/*stepContext.Values["zip"]*/null, cancellationToken);
+            // This isn't working: it is null in next step in parent dialog
+            
+            
+            return await stepContext.EndDialogAsync(stepContext.Values["lastOrderItem"], cancellationToken);
         }
     }
 }
