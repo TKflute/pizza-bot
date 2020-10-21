@@ -45,6 +45,8 @@ namespace PizzaBot.Dialogs
         {
             stepContext.Values["lastOrderItem"] = ((FoundChoice)stepContext.Result).Value;
             pizza = new Pizza();
+            pizza.Name = "pizza";  
+
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {

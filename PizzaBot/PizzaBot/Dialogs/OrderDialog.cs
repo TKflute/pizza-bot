@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using PizzaBot.Models;
+using System.Text;
 
 namespace PizzaBot.Dialogs
 {
@@ -60,8 +61,19 @@ namespace PizzaBot.Dialogs
             order.Type = (Order.OrderType)Enum.Parse(typeof(Order.OrderType), orderType);
             // order.OrderItems = new List<OrderItem>()
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {order.Customer.Name}! We will process your {order.OrderItems} order for {order.Type}"), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {order.Customer.Name}! We will process your {order.Type} order. " +
+                $"Here is your order summary: {PrintOrderSummary(order.OrderItems)}"), cancellationToken);
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+        }
+
+        private string PrintOrderSummary(List<OrderItem> items)
+        {
+            var summary = new StringBuilder();
+            foreach(OrderItem item in items)
+            {
+                summary.Append(item.ToString()).Append("\n");
+            }
+            return summary.ToString();
         }
     }
 }
