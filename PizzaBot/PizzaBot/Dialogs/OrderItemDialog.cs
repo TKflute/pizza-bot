@@ -23,6 +23,7 @@ namespace PizzaBot.Dialogs
             {
                 DisplayItemMenuStepAsync,
                 OrderItemStepAsync,
+                AddAnotherItemStepAsync,
                 CustomerInfoStepAsync, 
                 EndDialogStepAsync
             }));
@@ -45,8 +46,6 @@ namespace PizzaBot.Dialogs
                 }, cancellationToken);
         }
 
-        
-
        private async Task<DialogTurnResult> OrderItemStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var item = stepContext.Values["lastOrderItem"] = ((FoundChoice)stepContext.Result).Value; // keeping these k-v pairs in case I need them
@@ -68,14 +67,30 @@ namespace PizzaBot.Dialogs
         }
 
        
-        private async Task<DialogTurnResult> CustomerInfoStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> AddAnotherItemStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // TODO: keep adding items here
             var item = (OrderItem)stepContext.Result;
             order.OrderItems.Add(item);
 
-            // Then would call this when done adding items
-            return await stepContext.BeginDialogAsync(nameof(CustomerInfoDialog), null, cancellationToken);
+            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Would you like to add another item to your order?"),
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "Yes", "No"}),
+                }, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> CustomerInfoStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if (((FoundChoice)stepContext.Result).Value == "Yes")
+            {
+                return await stepContext.ReplaceDialogAsync(nameof(OrderItemDialog), null, cancellationToken);
+            }
+            else
+            {
+                return await stepContext.BeginDialogAsync(nameof(CustomerInfoDialog), null, cancellationToken);
+            }
         }
 
         private async Task<DialogTurnResult> EndDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

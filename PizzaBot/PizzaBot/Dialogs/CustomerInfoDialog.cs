@@ -39,7 +39,7 @@ namespace PizzaBot.Dialogs
         {
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
             {
-                Prompt = MessageFactory.Text("Good choice! May I please have your name?")
+                Prompt = MessageFactory.Text("May I please have your name?")
 
             }, cancellationToken);
         }
@@ -112,8 +112,6 @@ namespace PizzaBot.Dialogs
 
             Address newAddress = new Address(street, city, state, zip);
             Customer newCustomer = new Customer(name, phone, newAddress);
-            //Order newOrder = new Order();
-            //newOrder.Customer = newCustomer;
             
             return await stepContext.EndDialogAsync(newCustomer, cancellationToken);
         }
