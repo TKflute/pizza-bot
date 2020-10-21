@@ -9,29 +9,25 @@ using PizzaBot.Models;
 
 namespace PizzaBot.Dialogs
 {
-    public class OrderItemDialog : ComponentDialog
+    public class AddItemsDialog : ComponentDialog
     {
-        private Pizza pizza; // right now only branching to order a pizza 
-        //(So this would need to be in a PizzaDialog or have mult fields for side and drink
-        Order order;
-        public OrderItemDialog()
-            : base(nameof(OrderItemDialog))
+        List<OrderItem> items;
+        public AddItemsDialog()
+            : base(nameof(AddItemsDialog))
         {
-            order = new Order();
+           items = new List<OrderItem>();
 
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 DisplayItemMenuStepAsync,
-                OrderItemStepAsync,
+                AddItemStepAsync,
                 AddAnotherItemStepAsync,
-                CustomerInfoStepAsync, 
-                EndDialogStepAsync
+                RestartOrEndStepAsync
             }));
 
             AddDialog(new PizzaDialog());
             AddDialog(new SideItemDialog());
             AddDialog(new DrinkDialog());
-            AddDialog(new CustomerInfoDialog());
             AddDialog(new TextPrompt(nameof(TextPrompt)));
 
             InitialDialogId = nameof(WaterfallDialog);
@@ -46,7 +42,7 @@ namespace PizzaBot.Dialogs
                 }, cancellationToken);
         }
 
-       private async Task<DialogTurnResult> OrderItemStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+       private async Task<DialogTurnResult> AddItemStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var item = stepContext.Values["lastOrderItem"] = ((FoundChoice)stepContext.Result).Value; // keeping these k-v pairs in case I need them
             //var item = (OrderItem)stepContext.Values["lastOrderItem"];
@@ -71,7 +67,7 @@ namespace PizzaBot.Dialogs
         {
             // TODO: keep adding items here
             var item = (OrderItem)stepContext.Result;
-            order.OrderItems.Add(item);
+            items.Add(item);
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
@@ -81,25 +77,16 @@ namespace PizzaBot.Dialogs
                 }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> CustomerInfoStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> RestartOrEndStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (((FoundChoice)stepContext.Result).Value == "Yes")
             {
-                return await stepContext.ReplaceDialogAsync(nameof(OrderItemDialog), null, cancellationToken);
+                return await stepContext.ReplaceDialogAsync(nameof(AddItemsDialog), null, cancellationToken);
             }
             else
             {
-                return await stepContext.BeginDialogAsync(nameof(CustomerInfoDialog), null, cancellationToken);
+                return await stepContext.EndDialogAsync(items, cancellationToken);
             }
-        }
-
-        private async Task<DialogTurnResult> EndDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            //var order = (Order)stepContext.Result;
-            var customer = (Customer)stepContext.Result;
-            order.Customer = customer;
-
-            return await stepContext.EndDialogAsync(order, cancellationToken);
         }
     }
 }

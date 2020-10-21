@@ -12,21 +12,25 @@ namespace PizzaBot.Dialogs
 {
     public class OrderDialog : ComponentDialog
     {
-        private readonly IStatePropertyAccessor<Order> _orderAccessor;
+        //private readonly IStatePropertyAccessor<Order> _orderAccessor;
+        private readonly Order order;
         public OrderDialog(UserState userState)
             : base(nameof(OrderDialog))
         {
-            _orderAccessor = userState.CreateProperty<Order>("Order");
+            //_orderAccessor = userState.CreateProperty<Order>("Order");
+            order = new Order();
 
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 OrderTypeStepAsync,
-                OrderItemsStepAsync,
+                AddItemsStepAsync,
+                CustomerInfoStepAsync,
                 OrderConfirmStepAsync
             }));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new OrderItemDialog());
+            AddDialog(new AddItemsDialog());
+            AddDialog(new CustomerInfoDialog());
 
             InitialDialogId = nameof(WaterfallDialog);
         }
@@ -44,21 +48,28 @@ namespace PizzaBot.Dialogs
 
         }
 
-        private static async Task<DialogTurnResult> OrderItemsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> AddItemsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["orderType"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
-            return await stepContext.BeginDialogAsync(nameof(OrderItemDialog), null, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(AddItemsDialog), null, cancellationToken);
         }
 
+        private async Task<DialogTurnResult> CustomerInfoStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            // get OrderItem list from previous step and add to order member var
+            order.OrderItems = stepContext.Result as List<OrderItem>;  //?? new List<OrderItem>();
+            return await stepContext.BeginDialogAsync(nameof(CustomerInfoDialog), null, cancellationToken);
+        }
 
         private async Task<DialogTurnResult> OrderConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // var lastOrderItem = (string)stepContext.Result;
-            var order = (Order)stepContext.Result;
+            var customer = (Customer)stepContext.Result;
             // Get the current profile object from user state.
             //var order = await _orderAccessor.GetAsync(stepContext.Context, () => new Order(), cancellationToken);
             string orderType = (string)stepContext.Values["orderType"];
             order.Type = (Order.OrderType)Enum.Parse(typeof(Order.OrderType), orderType);
+            order.Customer = customer;
             // order.OrderItems = new List<OrderItem>()
 
             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {order.Customer.Name}! We will process your {order.Type} order. " +
