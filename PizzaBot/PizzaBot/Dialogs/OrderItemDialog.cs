@@ -28,6 +28,7 @@ namespace PizzaBot.Dialogs
             }));
 
             AddDialog(new PizzaDialog());
+            AddDialog(new SideItemDialog());
             AddDialog(new CustomerInfoDialog());
             AddDialog(new TextPrompt(nameof(TextPrompt)));
 
@@ -59,7 +60,7 @@ namespace PizzaBot.Dialogs
             return (item) switch
             {
                 "Pizza" => await stepContext.BeginDialogAsync(nameof(PizzaDialog), null, cancellationToken), 
-                "Side" => await stepContext.BeginDialogAsync(nameof(PizzaDialog), null, cancellationToken),
+                "Side" => await stepContext.BeginDialogAsync(nameof(SideItemDialog), null, cancellationToken),
                 "Drink" => await stepContext.BeginDialogAsync(nameof(PizzaDialog), null, cancellationToken),
                 _ => await stepContext.EndDialogAsync(null, cancellationToken) //TODO: Would want to handle invalid response, maybe add another layer on top of adapter
             };
