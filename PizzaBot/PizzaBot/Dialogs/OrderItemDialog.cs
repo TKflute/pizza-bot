@@ -13,19 +13,21 @@ namespace PizzaBot.Dialogs
     {
         private Pizza pizza; // right now only branching to order a pizza 
         //(So this would need to be in a PizzaDialog or have mult fields for side and drink
+        Order order;
         public OrderItemDialog()
             : base(nameof(OrderItemDialog))
         {
+            order = new Order();
+
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 DisplayItemMenuStepAsync,
-                PizzaSizeStepAsync,
-                PizzaCrustStepAsync,
-                PizzaToppingsStepAsync, 
+                OrderItemStepAsync,
                 CustomerInfoStepAsync, 
                 EndDialogStepAsync
             }));
 
+            AddDialog(new PizzaDialog());
             AddDialog(new CustomerInfoDialog());
             AddDialog(new TextPrompt(nameof(TextPrompt)));
 
@@ -37,71 +39,49 @@ namespace PizzaBot.Dialogs
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("What would you like to add to your order?"),
-                    Choices = ChoiceFactory.ToChoices(new List<string> { "Pizza", "Sides", "Drinks" }),
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "Pizza", "Side", "Drink" }),
                 }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> PizzaSizeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        
+
+       private async Task<DialogTurnResult> OrderItemStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            stepContext.Values["lastOrderItem"] = ((FoundChoice)stepContext.Result).Value;
-            pizza = new Pizza();
-            pizza.Name = "pizza";  
+            var item = stepContext.Values["lastOrderItem"] = ((FoundChoice)stepContext.Result).Value; // keeping these k-v pairs in case I need them
+            //var item = (OrderItem)stepContext.Values["lastOrderItem"];
+            //switch (nameof(item))
+            //{
+            //    case "Pizza":
+            //        return await stepContext.BeginDialogAsync(nameof(PizzaDialog), null, cancellationToken);
+            //    case "SideItem":
 
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
-                new PromptOptions
-                {
-                    Prompt = MessageFactory.Text("What size pizza would you like?"),
-                    Choices = ChoiceFactory.ToChoices(new List<string> { "Small", "Medium", "Large" }),
-                }, cancellationToken);
+            //}
+            return (item) switch
+            {
+                "Pizza" => await stepContext.BeginDialogAsync(nameof(PizzaDialog), null, cancellationToken), 
+                "Side" => await stepContext.BeginDialogAsync(nameof(PizzaDialog), null, cancellationToken),
+                "Drink" => await stepContext.BeginDialogAsync(nameof(PizzaDialog), null, cancellationToken),
+                _ => await stepContext.EndDialogAsync(null, cancellationToken) //TODO: Would want to handle invalid response, maybe add another layer on top of adapter
+            };
         }
 
-        private async Task<DialogTurnResult> PizzaCrustStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            stepContext.Values["pizzaSize"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
-            string size = (string)stepContext.Values["pizzaSize"];
-            pizza.Size = (Pizza.PizzaSize)Enum.Parse(typeof(Pizza.PizzaSize), size);
-
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
-                new PromptOptions
-                {
-                    Prompt = MessageFactory.Text("What kind of crust?"),
-                    Choices = ChoiceFactory.ToChoices(new List<string> { "Thin", "HandTossed", "DeepDish" }),
-                }, cancellationToken);
-        }
-
-        private async Task<DialogTurnResult> PizzaToppingsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            stepContext.Values["pizzaCrust"] = ((FoundChoice)stepContext.Result).Value; //TODO: will need to figure out how to store a List of items in the ConversationState
-            string crust = (string)stepContext.Values["pizzaCrust"];
-            pizza.Crust = (Pizza.PizzaCrust)Enum.Parse(typeof(Pizza.PizzaCrust), crust);
-
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
-                new PromptOptions
-                {
-                    Prompt = MessageFactory.Text("What kind of topping? (Choose one)"),
-                    Choices = ChoiceFactory.ToChoices(new List<string> { "Sausage", "Pepperoni", "Mushroom" }), //TODO: Select multiple toppings
-                }, cancellationToken);
-
-            // return await stepContext.BeginDialogAsync(nameof(OrderItemDialog), null, cancellationToken); // is this how you would restart a dialog (but with a Restart method)
-          
-        }
-
+       
         private async Task<DialogTurnResult> CustomerInfoStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            stepContext.Values["pizzaTopping"] = ((FoundChoice)stepContext.Result).Value;
-            string topping = (string)stepContext.Values["pizzaTopping"];
-            pizza.Toppings.Add((Pizza.Topping)Enum.Parse(typeof(Pizza.Topping), topping));
+            // TODO: keep adding items here
+            var item = (OrderItem)stepContext.Result;
+            order.OrderItems.Add(item);
 
+            // Then would call this when done adding items
             return await stepContext.BeginDialogAsync(nameof(CustomerInfoDialog), null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> EndDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var order = (Order)stepContext.Result;
+            //var order = (Order)stepContext.Result;
+            var customer = (Customer)stepContext.Result;
+            order.Customer = customer;
 
-            // TODO: start here: would need to save user input as a Pizza object as the conversation goes
-            order.OrderItems.Add(pizza);
-          
             return await stepContext.EndDialogAsync(order, cancellationToken);
         }
     }

@@ -112,10 +112,10 @@ namespace PizzaBot.Dialogs
 
             Address newAddress = new Address(street, city, state, zip);
             Customer newCustomer = new Customer(name, phone, newAddress);
-            Order newOrder = new Order();
-            newOrder.Customer = newCustomer;
+            //Order newOrder = new Order();
+            //newOrder.Customer = newCustomer;
             
-            return await stepContext.EndDialogAsync(newOrder, cancellationToken);
+            return await stepContext.EndDialogAsync(newCustomer, cancellationToken);
         }
     }
 }
